@@ -13,6 +13,11 @@ export const Triangle = memo(({dimensions, type, updateValue, position}) =>
         <polygon points="0 0, 100 100, 0 100" fill="black"/>
     </Model>)
 
+export const Container = styled.div`
+    display: flex;
+    align-items: flex-start;
+`
+
 export const Frame = styled.div`
     display: grid;
     width: ${({size}) => size}px;

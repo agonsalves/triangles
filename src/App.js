@@ -6,6 +6,7 @@ import React, {
 import {collection} from './collection'
 import {
     Button,
+    Container,
     Frame,
     Input,
     Panel,
@@ -22,6 +23,7 @@ const App = () => {
     const textRef = useRef(null)
     const [dimensions, setDimensions] = useState(10)
     const [squareSize, setSquareSize] = useState(45)
+    const [updateInterval, setUpdateInterval] = useState(2000)
 
     const [values, setValues] = useState([])
     const [isUpdating, setIsUpdating] = useState(false)
@@ -63,15 +65,15 @@ const App = () => {
             collection: () => setValues(collection[dimensions][Math.floor(Math.random() * collection[dimensions].length)])
         }
 
-        let interval
+        let updateFunc
         if (isUpdating)
-            interval = setInterval(() => methods[method](), 2000)
+            updateFunc = setInterval(() => methods[method](), updateInterval)
 
-        return () => clearInterval(interval)
-    }, [isUpdating, method, dimensions])
+        return () => clearInterval(updateFunc)
+    }, [isUpdating, method, dimensions, updateInterval])
 
     return (
-        <div className="App">
+        <Container>
             <Frame size={(dimensions * 2) * squareSize}>
                 {q.map(number =>
                     <Quadrant number={number} className="quadrant" key={number}>
@@ -105,9 +107,13 @@ const App = () => {
                         Square Size:
                         <input onChange={e => setSquareSize(e.target.value)} value={squareSize} type="number"/>
                     </div>
+                    <div>
+                        Interval:
+                        <input onChange={e => setUpdateInterval(e.target.value)} value={updateInterval} type="number"/>ms
+                    </div>
                 </div>
             </Panel>
-        </div>
+        </Container>
     )
 }
 
