@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "d1dc9aa89757cd0c15bf5b958b940a79",
+    "revision": "f9de0eb56153032b21358acc0e294f7a",
     "url": "/triangles/index.html"
   },
   {
-    "revision": "631787dc93e876dbc002",
+    "revision": "7c28e681d78d4167fe21",
     "url": "/triangles/static/css/main.5ecd60fb.chunk.css"
   },
   {
@@ -16,8 +16,8 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/triangles/static/js/2.98185ae5.chunk.js.LICENSE.txt"
   },
   {
-    "revision": "631787dc93e876dbc002",
-    "url": "/triangles/static/js/main.7f50d4df.chunk.js"
+    "revision": "7c28e681d78d4167fe21",
+    "url": "/triangles/static/js/main.ab8db838.chunk.js"
   },
   {
     "revision": "ab32d0cc88c0010e048e",
