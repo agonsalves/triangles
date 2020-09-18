@@ -24,10 +24,9 @@ const App = () => {
     const [dimensions, setDimensions] = useState(10)
     const [squareSize, setSquareSize] = useState(45)
     const [updateInterval, setUpdateInterval] = useState(2000)
-
     const [values, setValues] = useState([])
     const [isUpdating, setIsUpdating] = useState(false)
-    const [method, setMethod] = useState('single')
+    const [method, setMethod] = useState('collection')
     const q = [0, 1, 2, 3]
 
     const updateValue = position => {
@@ -47,6 +46,23 @@ const App = () => {
         })
     }
 
+    const cascade = (newValues) => {
+        let updated = [...values]
+
+        for (let limit = 0; limit < dimensions; limit++) {
+            setTimeout(() => {
+                for (let y = 0; y <= limit; y++) {
+                    for (let x = 0; x <= limit; x++) {
+                        let position = (y * dimensions) + x
+                        updated[position] = newValues[position]
+                    }
+                }
+
+                setValues(values => values.map((item, index) => updated[index]))
+            }, 200)
+        }
+    }
+
     const toggleRandomize = () => setIsUpdating(isUpdating => !isUpdating)
 
     const copyToClipboard = () => {
@@ -62,7 +78,7 @@ const App = () => {
         const methods = {
             single: () => updateValue(Math.floor(Math.random() * (dimensions * dimensions - 1))),
             all: () => setValues(buildQuadrant(dimensions)),
-            collection: () => setValues(collection[dimensions][Math.floor(Math.random() * collection[dimensions].length)])
+            collection: () => updateValue(collection[dimensions][Math.floor(Math.random() * collection[dimensions].length)])
         }
 
         let updateFunc
@@ -91,7 +107,7 @@ const App = () => {
             </Frame>
             <Panel>
                 <Button onClick={toggleRandomize}>Randomize<br/>{isUpdating ? 'on' : 'off'}</Button>
-                <select onChange={(e) => setMethod(e.target.value)} defaultValue="single">
+                <select onChange={(e) => setMethod(e.target.value)} defaultValue="collection">
                     <option value="single">single</option>
                     <option value="all">all</option>
                     <option value="collection">collection</option>

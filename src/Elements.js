@@ -1,17 +1,37 @@
 import React, {memo} from 'react'
+import {
+    animated,
+    useSpring
+}                    from 'react-spring'
 import styled        from 'styled-components'
 
-export const Triangle = memo(({dimensions, type, updateValue, position}) =>
-    <Model
-        viewBox="0 0 100 100"
-        xmlns="http://www.w3.org/2000/svg"
-        dimensions={dimensions}
-        type={type}
-        className={`type-${type}`}
-        onClick={() => updateValue(position)}
-    >
-        <polygon points="0 0, 100 100, 0 100" fill="black"/>
-    </Model>)
+const pointSet = [
+    'M0,0 L 0,100 L 100,100Z',
+    'M0,100 L 100,100 L 100,0Z',
+    'M100,100 L 100,0 L 0,0Z',
+    'M100,0 L 0,0 L 0,100Z'
+]
+
+export const Triangle = memo(({dimensions, type, updateValue, position}) => {
+    const {shape} = useSpring({
+        shape: pointSet[type],
+        config: {
+            precision: 0.05
+        }
+    })
+
+    return (
+        <Model
+            viewBox="0 0 100 100"
+            xmlns="http://www.w3.org/2000/svg"
+            dimensions={dimensions}
+            type={type}
+            onClick={() => updateValue(position)}
+        >
+            <animated.path d={shape} fill="black"/>
+        </Model>
+    )
+})
 
 export const Container = styled.div`
     display: flex;
@@ -32,8 +52,6 @@ export const Frame = styled.div`
 const Model = styled.svg`
     width: ${({dimensions}) => 100 / (dimensions)}%;
     height:  ${({dimensions}) => 100 / (dimensions)}%;
-    transform: rotate(${({type}) => type * 90}deg);
-    transition: transform .4s ease-out;
 `
 
 export const Quadrant = styled.div`
