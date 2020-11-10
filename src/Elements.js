@@ -1,9 +1,10 @@
-import React, {memo} from 'react'
+import React, {memo}      from 'react'
 import {
     animated,
     useSpring
-}                    from 'react-spring'
-import styled        from 'styled-components'
+}                         from 'react-spring'
+import styled             from 'styled-components'
+import {positionToCoords} from './utils'
 
 const pointSet = [
     'M0,0 L 0,100 L 100,100Z',
@@ -12,12 +13,15 @@ const pointSet = [
     'M100,0 L 0,0 L 0,100Z'
 ]
 
-export const Triangle = memo(({dimensions, type, updateValue, position}) => {
+export const Triangle = memo(({dimensions, type, updateValue, position, isDelayed}) => {
+    const {x, y} = positionToCoords(position, dimensions)
     const {shape} = useSpring({
         shape: pointSet[type],
         config: {
-            precision: 0.05
-        }
+            precision: 0.05,
+            duration: 250
+        },
+        delay: isDelayed ? Math.max(x, y) * 75 : 0
     })
 
     return (
@@ -39,6 +43,7 @@ export const Container = styled.div`
 `
 
 export const Frame = styled.div`
+    background-color: white;
     display: grid;
     width: ${({size}) => size}px;
     height: ${({size}) => size}px;
@@ -63,6 +68,7 @@ export const Quadrant = styled.div`
 `
 
 export const Panel = styled.div`
+    background-color: white;
     opacity: 0;
     transition: opacity .2s ease-out;
     display: flex;

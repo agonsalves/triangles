@@ -16,8 +16,9 @@ import {
 import {
     buildQuadrant,
     flip,
-    increment
-}                   from './utils'
+    increment,
+    positionToCoords
+} from './utils'
 
 const App = () => {
     const textRef = useRef(null)
@@ -30,8 +31,7 @@ const App = () => {
     const q = [0, 1, 2, 3]
 
     const updateValue = position => {
-        const x = !!position ? position % dimensions : 0
-        const y = Math.floor(position / dimensions)
+        const {x, y} = positionToCoords(position, dimensions)
 
         setValues(old => {
             let updated = [...old]
@@ -44,23 +44,6 @@ const App = () => {
 
             return updated
         })
-    }
-
-    const cascade = (newValues) => {
-        let updated = [...values]
-
-        for (let limit = 0; limit < dimensions; limit++) {
-            setTimeout(() => {
-                for (let y = 0; y <= limit; y++) {
-                    for (let x = 0; x <= limit; x++) {
-                        let position = (y * dimensions) + x
-                        updated[position] = newValues[position]
-                    }
-                }
-
-                setValues(values => values.map((item, index) => updated[index]))
-            }, 200)
-        }
     }
 
     const toggleRandomize = () => setIsUpdating(isUpdating => !isUpdating)
@@ -78,7 +61,7 @@ const App = () => {
         const methods = {
             single: () => updateValue(Math.floor(Math.random() * (dimensions * dimensions - 1))),
             all: () => setValues(buildQuadrant(dimensions)),
-            collection: () => updateValue(collection[dimensions][Math.floor(Math.random() * collection[dimensions].length)])
+            collection: () => setValues(collection[dimensions][Math.floor(Math.random() * collection[dimensions].length)])
         }
 
         let updateFunc
@@ -86,6 +69,7 @@ const App = () => {
             updateFunc = setInterval(() => methods[method](), updateInterval)
 
         return () => clearInterval(updateFunc)
+        // eslint-disable-next-line
     }, [isUpdating, method, dimensions, updateInterval])
 
     return (
@@ -100,6 +84,7 @@ const App = () => {
                                 key={i}
                                 position={i}
                                 updateValue={updateValue}
+                                isDelayed={isUpdating}
                             />
                         )}
                     </Quadrant>

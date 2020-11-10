@@ -18,3 +18,10 @@ export const buildQuadrant = dimensions => {
 export const increment = value => value === 3 ? 0 : value + 1
 
 export const flip = type => type === 1 ? 3 : type === 3 ? 1 : type
+
+export const positionToCoords = (position, dimensions) => {
+    const x = !!position ? position % dimensions : 0
+    const y = Math.floor(position / dimensions)
+
+    return {x,y}
+}
