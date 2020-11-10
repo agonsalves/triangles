@@ -13,16 +13,22 @@ const pointSet = [
     'M100,0 L 0,0 L 0,100Z'
 ]
 
-export const Triangle = memo(({dimensions, type, updateValue, position, isDelayed}) => {
+const range = [0, .15, .3, .45, .60, .75, .90, 1]
+const output = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet', 'black']
+
+export const Triangle = memo(({dimensions, type, updateValue, position, isDelayed, isColor}) => {
     const {x, y} = positionToCoords(position, dimensions)
-    const {shape} = useSpring({
+    const {shape, color} = useSpring({
         shape: pointSet[type],
+        color: (x + y) / ((dimensions * 2) - 2),
         config: {
             precision: 0.05,
             duration: 250
         },
         delay: isDelayed ? Math.max(x, y) * 75 : 0
     })
+
+    const fill = isColor ? color.interpolate({range, output}) : 'black'
 
     return (
         <Model
@@ -32,7 +38,7 @@ export const Triangle = memo(({dimensions, type, updateValue, position, isDelaye
             type={type}
             onClick={() => updateValue(position)}
         >
-            <animated.path d={shape} fill="black"/>
+            <animated.path d={shape} fill={fill}/>
         </Model>
     )
 })

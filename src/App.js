@@ -25,6 +25,7 @@ const App = () => {
     const [dimensions, setDimensions] = useState(10)
     const [squareSize, setSquareSize] = useState(45)
     const [updateInterval, setUpdateInterval] = useState(2000)
+    const [isColor, setIsColor] = useState(false)
     const [values, setValues] = useState([])
     const [isUpdating, setIsUpdating] = useState(false)
     const [method, setMethod] = useState('collection')
@@ -85,6 +86,7 @@ const App = () => {
                                 position={i}
                                 updateValue={updateValue}
                                 isDelayed={isUpdating}
+                                isColor={isColor}
                             />
                         )}
                     </Quadrant>
@@ -111,6 +113,10 @@ const App = () => {
                     <div>
                         Interval:
                         <input onChange={e => setUpdateInterval(e.target.value)} value={updateInterval} type="number"/>ms
+                    </div>
+                    <div>
+                        Color:
+                        <input onChange={e => setIsColor(isColor => !isColor)} value={isColor} type="checkbox"/>
                     </div>
                 </div>
             </Panel>
