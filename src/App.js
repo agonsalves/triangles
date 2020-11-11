@@ -13,19 +13,24 @@ import {
     Quadrant,
     Triangle
 }                   from './Elements'
+import {gradients}  from './gradients'
 import {
     buildQuadrant,
     flip,
     increment,
+    maybeFlip,
     positionToCoords
 } from './utils'
+
+const black = ['black', 'black']
 
 const App = () => {
     const textRef = useRef(null)
     const [dimensions, setDimensions] = useState(10)
-    const [squareSize, setSquareSize] = useState(45)
+    const [squareSize, setSquareSize] = useState(50)
     const [updateInterval, setUpdateInterval] = useState(2000)
     const [isColor, setIsColor] = useState(false)
+    const [colors, setColors] = useState(black)
     const [values, setValues] = useState([])
     const [isUpdating, setIsUpdating] = useState(false)
     const [method, setMethod] = useState('collection')
@@ -67,11 +72,14 @@ const App = () => {
 
         let updateFunc
         if (isUpdating)
-            updateFunc = setInterval(() => methods[method](), updateInterval)
+            updateFunc = setInterval(() => {
+                isColor ? setColors(maybeFlip(gradients[Math.floor(Math.random() * (gradients.length - 1))])) : setColors(black)
+                methods[method]()
+            }, updateInterval)
 
         return () => clearInterval(updateFunc)
         // eslint-disable-next-line
-    }, [isUpdating, method, dimensions, updateInterval])
+    }, [isUpdating, method, dimensions, updateInterval, isColor])
 
     return (
         <Container>
@@ -86,7 +94,7 @@ const App = () => {
                                 position={i}
                                 updateValue={updateValue}
                                 isDelayed={isUpdating}
-                                isColor={isColor}
+                                colors={colors}
                             />
                         )}
                     </Quadrant>

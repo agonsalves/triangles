@@ -1,10 +1,13 @@
-import React, {memo}      from 'react'
+import React, {memo, useState}      from 'react'
 import {
     animated,
     useSpring
 }                         from 'react-spring'
 import styled             from 'styled-components'
-import {positionToCoords} from './utils'
+import {
+    getRange,
+    positionToCoords
+} from './utils'
 
 const pointSet = [
     'M0,0 L 0,100 L 100,100Z',
@@ -13,10 +16,8 @@ const pointSet = [
     'M100,0 L 0,0 L 0,100Z'
 ]
 
-const range = [0, .15, .3, .45, .60, .75, .90, 1]
-const output = ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet', 'black']
-
-export const Triangle = memo(({dimensions, type, updateValue, position, isDelayed, isColor}) => {
+export const Triangle = memo(({dimensions, type, updateValue, position, isDelayed, colors}) => {
+    const [output, setOutput] = useState(colors)
     const {x, y} = positionToCoords(position, dimensions)
     const {shape, color} = useSpring({
         shape: pointSet[type],
@@ -25,10 +26,9 @@ export const Triangle = memo(({dimensions, type, updateValue, position, isDelaye
             precision: 0.05,
             duration: 250
         },
-        delay: isDelayed ? Math.max(x, y) * 75 : 0
+        delay: isDelayed ? Math.max(x, y) * 75 : 0,
+        onStart: () => setTimeout(() => setOutput(colors), 35),
     })
-
-    const fill = isColor ? color.interpolate({range, output}) : 'black'
 
     return (
         <Model
@@ -38,7 +38,7 @@ export const Triangle = memo(({dimensions, type, updateValue, position, isDelaye
             type={type}
             onClick={() => updateValue(position)}
         >
-            <animated.path d={shape} fill={fill}/>
+            <animated.path d={shape} style={{fill: color?.interpolate({range: getRange(output), output})}}/>
         </Model>
     )
 })

@@ -25,3 +25,10 @@ export const positionToCoords = (position, dimensions) => {
 
     return {x,y}
 }
+
+export const getRange = colors => ([...colors.map((x, i) => (1 / (colors.length - 1)) * i), 1])
+
+export const maybeFlip = array => {
+    const isReversed = Math.floor(Math.random() * 2)
+    return isReversed ? array.reverse() : array
+}
