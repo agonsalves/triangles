@@ -2,7 +2,7 @@ import React, {
     useEffect,
     useRef,
     useState
-}                   from 'react'
+} from 'react'
 import {collection} from './collection'
 import {
     Button,
@@ -15,29 +15,38 @@ import {
     Quadrant,
     Triangle
 } from './Elements'
-import {gradients}  from './gradients'
+import {gradients} from './gradients'
 import {
     buildQuadrant,
     flip,
     increment,
     maybeFlip,
     positionToCoords
-}                   from './utils'
+} from './utils'
 
 const black = ['black', 'black']
+const q = [0, 1, 2, 3]
 
 const App = () => {
     const textRef = useRef(null)
-    const [dimensions, setDimensions] = useState(10)
-    const [squareSize, setSquareSize] = useState(50)
-    const [updateInterval, setUpdateInterval] = useState(2000)
-    const [isColor, setIsColor] = useState(false)
-    const [isDark, setIsDark] = useState(false)
-    const [colors, setColors] = useState(black)
+    const [config, setConfig] = useState({
+        dimensions: 10,
+        squareSize: 50,
+        interval: 2000,
+        duration: 250,
+        stagger: 75,
+        isColor: false,
+        isDark: false,
+        isUpdating: false,
+        colors: black,
+        method: 'collection'
+    })
     const [values, setValues] = useState([])
-    const [isUpdating, setIsUpdating] = useState(false)
-    const [method, setMethod] = useState('collection')
-    const q = [0, 1, 2, 3]
+    const {dimensions, squareSize, interval, isColor, isDark, isUpdating, method, colors, duration, stagger} = config
+
+    useEffect(() => {
+        setValues(buildQuadrant(dimensions))
+    }, [dimensions])
 
     const updateValue = position => {
         const {x, y} = positionToCoords(position, dimensions)
@@ -55,16 +64,12 @@ const App = () => {
         })
     }
 
-    const toggleRandomize = () => setIsUpdating(isUpdating => !isUpdating)
+    const toggleRandomize = () => setConfig(config => ({...config, isUpdating: !config.isUpdating}))
 
     const copyToClipboard = () => {
         textRef.current.select()
         document.execCommand('copy')
     }
-
-    useEffect(() => {
-        setValues(buildQuadrant(dimensions))
-    }, [dimensions])
 
     useEffect(() => {
         const methods = {
@@ -76,13 +81,18 @@ const App = () => {
         let updateFunc
         if (isUpdating)
             updateFunc = setInterval(() => {
-                isColor ? setColors(maybeFlip(gradients[Math.floor(Math.random() * (gradients.length - 1))])) : setColors(black)
+                isColor
+                    ? setConfig(config => ({
+                        ...config,
+                        colors: maybeFlip(gradients[Math.floor(Math.random() * (gradients.length - 1))])
+                    }))
+                    : setConfig(config => ({...config, colors: black}))
                 methods[method]()
-            }, updateInterval)
+            }, interval)
 
         return () => clearInterval(updateFunc)
         // eslint-disable-next-line
-    }, [isUpdating, method, dimensions, updateInterval, isColor])
+    }, [isUpdating, method, dimensions, interval, isColor])
 
     return (
         <Container>
@@ -98,6 +108,8 @@ const App = () => {
                                 updateValue={updateValue}
                                 isUpdating={isUpdating}
                                 colors={colors}
+                                duration={duration}
+                                stagger={stagger}
                             />
                         )}
                     </Quadrant>
@@ -105,7 +117,10 @@ const App = () => {
             </Frame>
             <PanelWrapper>
                 <Panel>
-                    <select onChange={(e) => setMethod(e.target.value)} defaultValue="collection">
+                    <select
+                        onChange={e => setConfig(config => ({...config, method: e.target.value}))}
+                        defaultValue="collection"
+                    >
                         <option value="single">single</option>
                         <option value="all">all</option>
                         <option value="collection">collection</option>
@@ -116,28 +131,53 @@ const App = () => {
                     <div>
                         <div>
                             Dimensions:
-                            <Field onChange={e => setDimensions(e.target.value)} value={dimensions} type="number"/>
+                            <Field
+                                onChange={e => setConfig(config => ({...config, dimensions: e.target.value}))}
+                                value={dimensions}
+                                type="number"
+                            />
                         </div>
                         <div>
                             Square Size:
-                            <Field onChange={e => setSquareSize(e.target.value)} value={squareSize} type="number"/>
+                            <Field
+                                onChange={e => setConfig(config => ({...config, squareSize: e.target.value}))}
+                                value={squareSize}
+                                type="number
+                                "/>
                         </div>
                         <div>
                             Interval:
                             <Field
-                                onChange={e => setUpdateInterval(e.target.value)}
-                                value={updateInterval}
+                                onChange={e => setConfig(config => ({...config, interval: e.target.value}))}
+                                value={interval}
+                                type="number"
+                            />
+                            ms
+                        </div>
+                        <div>
+                            Stagger:
+                            <Field
+                                onChange={e => setConfig(config => ({...config, stagger: e.target.value}))}
+                                value={stagger}
                                 type="number"
                             />
                             ms
                         </div>
                         <div>
                             Color:
-                            <Field onChange={e => setIsColor(isColor => !isColor)} value={isColor} type="checkbox"/>
+                            <Field
+                                onChange={() => setConfig(config => ({...config, isColor: !config.isColor}))}
+                                value={isColor}
+                                type="checkbox"
+                            />
                         </div>
                         <div>
                             Dark Mode:
-                            <Field onChange={() => setIsDark(isDark => !isDark)} value={isDark} type="checkbox"/>
+                            <Field
+                                onChange={() => setConfig(config => ({...config, isDark: !config.isDark}))}
+                                value={isDark}
+                                type="checkbox"
+                            />
                         </div>
                     </div>
                 </Panel>

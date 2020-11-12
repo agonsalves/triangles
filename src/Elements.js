@@ -14,7 +14,7 @@ const pointSet = [
     'M100,0 L 0,0 L 0,100Z'
 ]
 
-export const Triangle = memo(({dimensions, type, updateValue, position, colors, isUpdating}) => {
+export const Triangle = memo(({dimensions, type, updateValue, position, colors, isUpdating, duration, stagger}) => {
     const {x, y} = positionToCoords(position, dimensions)
     const colorMap = interpolate(colors)
     const {shape, fill} = useSpring({
@@ -22,9 +22,9 @@ export const Triangle = memo(({dimensions, type, updateValue, position, colors, 
         fill: colorMap((x + y) / ((dimensions * 2) - 2)),
         config: {
             precision: 0.05,
-            duration: 250
+            duration
         },
-        delay: isUpdating ? Math.max(x, y) * 75 : 0,
+        delay: isUpdating ? Math.max(x, y) * stagger : 0,
     })
 
     return (
