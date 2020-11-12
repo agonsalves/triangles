@@ -48,7 +48,7 @@ export const Container = styled.div`
 `
 
 export const Frame = styled.div`
-    background-color: white;
+    background-color: ${({isDark}) => isDark ? 'black' : 'white'};
     display: grid;
     width: ${({size}) => size}px;
     height: ${({size}) => size}px;

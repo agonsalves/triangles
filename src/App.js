@@ -32,6 +32,7 @@ const App = () => {
     const [squareSize, setSquareSize] = useState(50)
     const [updateInterval, setUpdateInterval] = useState(2000)
     const [isColor, setIsColor] = useState(false)
+    const [isDark, setIsDark] = useState(false)
     const [colors, setColors] = useState(black)
     const [values, setValues] = useState([])
     const [isUpdating, setIsUpdating] = useState(false)
@@ -85,7 +86,7 @@ const App = () => {
 
     return (
         <Container>
-            <Frame size={(dimensions * 2) * squareSize}>
+            <Frame size={(dimensions * 2) * squareSize} isDark={isDark}>
                 {q.map(number =>
                     <Quadrant number={number} className="quadrant" key={number}>
                         {values.map((type, i) =>
@@ -132,6 +133,10 @@ const App = () => {
                         <div>
                             Color:
                             <Field onChange={e => setIsColor(isColor => !isColor)} value={isColor} type="checkbox"/>
+                        </div>
+                        <div>
+                            Dark Mode:
+                            <Field onChange={() => setIsDark(isDark => !isDark)} value={isDark} type="checkbox"/>
                         </div>
                     </div>
                 </Panel>
