@@ -96,6 +96,7 @@ const App = () => {
                                 key={i}
                                 position={i}
                                 updateValue={updateValue}
+                                isUpdating={isUpdating}
                                 colors={colors}
                             />
                         )}
