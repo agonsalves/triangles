@@ -7,12 +7,14 @@ import {collection} from './collection'
 import {
     Button,
     Container,
+    Field,
     Frame,
-    Input,
+    HiddenField,
     Panel,
+    PanelWrapper,
     Quadrant,
     Triangle
-}                   from './Elements'
+} from './Elements'
 import {gradients}  from './gradients'
 import {
     buildQuadrant,
@@ -20,7 +22,7 @@ import {
     increment,
     maybeFlip,
     positionToCoords
-} from './utils'
+}                   from './utils'
 
 const black = ['black', 'black']
 
@@ -93,41 +95,47 @@ const App = () => {
                                 key={i}
                                 position={i}
                                 updateValue={updateValue}
-                                isDelayed={isUpdating}
                                 colors={colors}
                             />
                         )}
                     </Quadrant>
                 )}
             </Frame>
-            <Panel>
-                <Button onClick={toggleRandomize}>Randomize<br/>{isUpdating ? 'on' : 'off'}</Button>
-                <select onChange={(e) => setMethod(e.target.value)} defaultValue="collection">
-                    <option value="single">single</option>
-                    <option value="all">all</option>
-                    <option value="collection">collection</option>
-                </select>
-                <Input id="copyarea" ref={textRef} value={JSON.stringify(values).trim()} readOnly/>
-                <Button onClick={copyToClipboard}>Copy</Button>
-                <div>
+            <PanelWrapper>
+                <Panel>
+                    <select onChange={(e) => setMethod(e.target.value)} defaultValue="collection">
+                        <option value="single">single</option>
+                        <option value="all">all</option>
+                        <option value="collection">collection</option>
+                    </select>
+                    <Button onClick={toggleRandomize}>Randomize:<br/>{isUpdating ? 'on' : 'off'}</Button>
+                    <HiddenField id="copyarea" ref={textRef} value={JSON.stringify(values).trim()} readOnly/>
+                    <Button onClick={copyToClipboard}>Copy</Button>
                     <div>
-                        Dimensions:
-                        <input onChange={e => setDimensions(e.target.value)} value={dimensions} type="number"/>
+                        <div>
+                            Dimensions:
+                            <Field onChange={e => setDimensions(e.target.value)} value={dimensions} type="number"/>
+                        </div>
+                        <div>
+                            Square Size:
+                            <Field onChange={e => setSquareSize(e.target.value)} value={squareSize} type="number"/>
+                        </div>
+                        <div>
+                            Interval:
+                            <Field
+                                onChange={e => setUpdateInterval(e.target.value)}
+                                value={updateInterval}
+                                type="number"
+                            />
+                            ms
+                        </div>
+                        <div>
+                            Color:
+                            <Field onChange={e => setIsColor(isColor => !isColor)} value={isColor} type="checkbox"/>
+                        </div>
                     </div>
-                    <div>
-                        Square Size:
-                        <input onChange={e => setSquareSize(e.target.value)} value={squareSize} type="number"/>
-                    </div>
-                    <div>
-                        Interval:
-                        <input onChange={e => setUpdateInterval(e.target.value)} value={updateInterval} type="number"/>ms
-                    </div>
-                    <div>
-                        Color:
-                        <input onChange={e => setIsColor(isColor => !isColor)} value={isColor} type="checkbox"/>
-                    </div>
-                </div>
-            </Panel>
+                </Panel>
+            </PanelWrapper>
         </Container>
     )
 }

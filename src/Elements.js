@@ -1,13 +1,11 @@
-import React, {memo, useState}      from 'react'
+import interpolate        from 'color-interpolate'
+import React, {memo}      from 'react'
 import {
     animated,
     useSpring
 }                         from 'react-spring'
 import styled             from 'styled-components'
-import {
-    getRange,
-    positionToCoords
-} from './utils'
+import {positionToCoords} from './utils'
 
 const pointSet = [
     'M0,0 L 0,100 L 100,100Z',
@@ -16,18 +14,17 @@ const pointSet = [
     'M100,0 L 0,0 L 0,100Z'
 ]
 
-export const Triangle = memo(({dimensions, type, updateValue, position, isDelayed, colors}) => {
-    const [output, setOutput] = useState(colors)
+export const Triangle = memo(({dimensions, type, updateValue, position, colors}) => {
     const {x, y} = positionToCoords(position, dimensions)
-    const {shape, color} = useSpring({
+    const colorMap = interpolate(colors)
+    const {shape, fill} = useSpring({
         shape: pointSet[type],
-        color: (x + y) / ((dimensions * 2) - 2),
+        fill: colorMap((x + y) / ((dimensions * 2) - 2)),
         config: {
             precision: 0.05,
             duration: 250
         },
-        delay: isDelayed ? Math.max(x, y) * 75 : 0,
-        onStart: () => setTimeout(() => setOutput(colors), 35),
+        delay: Math.max(x, y) * 75,
     })
 
     return (
@@ -38,14 +35,16 @@ export const Triangle = memo(({dimensions, type, updateValue, position, isDelaye
             type={type}
             onClick={() => updateValue(position)}
         >
-            <animated.path d={shape} style={{fill: color?.interpolate({range: getRange(output), output})}}/>
+            <animated.path d={shape} style={{fill}}/>
         </Model>
     )
 })
 
 export const Container = styled.div`
     display: flex;
-    align-items: flex-start;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
 `
 
 export const Frame = styled.div`
@@ -73,11 +72,18 @@ export const Quadrant = styled.div`
     grid-area: q${({number}) => number + 1};
 `
 
+export const PanelWrapper = styled.div`
+    position: absolute;
+    top: 0;
+    left: 0;
+`
+
 export const Panel = styled.div`
     background-color: white;
     opacity: 0;
     transition: opacity .2s ease-out;
     display: flex;
+    flex-direction: column;
     position: relative;
     &:hover {
       opacity: 1;
@@ -92,11 +98,17 @@ export const Button = styled.div`
     justify-content: center;
     align-items: center;
     font-size: 12px;
+    border: 1px solid #333;
+    text-align: center;
 `
 
-export const Input = styled.input`
+export const HiddenField = styled.input`
     height: 0;
     padding: 0;
     border: none;
     position: absolute;
+`
+
+export const Field = styled.input`
+    width: 50px;
 `
