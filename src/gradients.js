@@ -1,5 +1,5 @@
 export const gradients = [
-    ['red', 'orange', 'yellow', 'green', 'blue', 'indigo', 'violet'],
+    ['red', 'yellow', 'blue', 'violet'],
     ['#e96443', '#904e95'],
     ['#E55D87', '#5FC3E4'],
     ['#00416A', '#799F0C', '#FFE000'],
@@ -9,5 +9,20 @@ export const gradients = [
     ['#40e0d0', '#ff8c00', '#ff0080'],
     ['#3e5151', '#decba4'],
     ['#11998e', '#38ef7d'],
-    ['#22c1c3', '#fdbb2d']
+    ['#22c1c3', '#fdbb2d'],
+    ['#b24592', '#f15f79'],
+    ['#f1f2b5', '#135058'],
+    ['#ff0084', '#33001b'],
+    ['#833ab4', '#fd1d1d', '#fcb045'],
+    ['#d38312', '#a83279'],
+    ['#556270', '#ff6b6b'],
+    ['#c21500', '#ffc500'],
+    ['#134e5e', '#71b280'],
+    ['#ffe000', '#799f0c'],
+    ['#9796f0', '#fbc7d4'],
+    ['#3EECAC', '#EE74E1'],
+    ['#FA8BFF', '#2BD2FF', '#2BFF88'],
+    ['#FF3CAC', '#784BA0', '#2B86C5'],
+    ['#30cfd0', '#330867'],
+    ['#eea2a2', '#bbc1bf', '#57c6e1', '#b49fda', '#7ac5d8']
 ]
