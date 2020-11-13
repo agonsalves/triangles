@@ -39,10 +39,13 @@ const App = () => {
         isDark: false,
         isUpdating: false,
         colors: black,
-        method: 'collection'
+        method: 'collection',
+        index: null,
+        sequenceIndex: 0,
+        incoming: ''
     })
     const [values, setValues] = useState([])
-    const {dimensions, squareSize, interval, isColor, isDark, isUpdating, method, colors, duration, stagger} = config
+    const {dimensions, squareSize, interval, isColor, isDark, isUpdating, method, colors, duration, stagger, incoming} = config
 
     useEffect(() => {
         setValues(buildQuadrant(dimensions))
@@ -71,9 +74,16 @@ const App = () => {
         document.execCommand('copy')
     }
 
+    const processInput = () => {
+        const newLayout = JSON.parse(incoming)
+
+        if (Array.isArray(newLayout) && newLayout.length === dimensions ^ 2)
+            setValues(newLayout)
+    }
+
     useEffect(() => {
         const methods = {
-            single: () => updateValue(Math.floor(Math.random() * (dimensions * dimensions - 1))),
+            single: () => updateValue(Math.floor(Math.random() * ((dimensions ^ 2) - 1))),
             all: () => setValues(buildQuadrant(dimensions)),
             collection: () => setValues(collection[dimensions][Math.floor(Math.random() * collection[dimensions].length)])
         }
@@ -124,6 +134,7 @@ const App = () => {
                         <option value="single">single</option>
                         <option value="all">all</option>
                         <option value="collection">collection</option>
+                        <option value="sequence">sequence</option>
                     </select>
                     <Button onClick={toggleRandomize}>Randomize:<br/>{isUpdating ? 'on' : 'off'}</Button>
                     <HiddenField id="copyarea" ref={textRef} value={JSON.stringify(values).trim()} readOnly/>
@@ -178,6 +189,17 @@ const App = () => {
                                 value={isDark}
                                 type="checkbox"
                             />
+                        </div>
+                        <div>
+                            Input:
+                            <Field
+                                onChange={e => setConfig(config => ({...config, incoming: e.target.value}))}
+                                value={incoming}
+                                type="text"
+                            />
+                        </div>
+                        <div>
+                            <Button onClick={processInput}>Update</Button>
                         </div>
                     </div>
                 </Panel>
