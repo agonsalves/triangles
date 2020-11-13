@@ -2,7 +2,7 @@ import React, {
     useEffect,
     useRef,
     useState
-} from 'react'
+}                   from 'react'
 import {collection} from './collection'
 import {
     Button,
@@ -14,15 +14,16 @@ import {
     PanelWrapper,
     Quadrant,
     Triangle
-} from './Elements'
-import {gradients} from './gradients'
+}                   from './Elements'
+import {gradients}  from './gradients'
+import {sequence}   from './sequence'
 import {
     buildQuadrant,
     flip,
     increment,
     maybeFlip,
     positionToCoords
-} from './utils'
+}                   from './utils'
 
 const black = ['black', 'black']
 const q = [0, 1, 2, 3]
@@ -45,7 +46,7 @@ const App = () => {
         incoming: ''
     })
     const [values, setValues] = useState([])
-    const {dimensions, squareSize, interval, isColor, isDark, isUpdating, method, colors, duration, stagger, incoming} = config
+    const {dimensions, squareSize, interval, isColor, isDark, isUpdating, method, colors, duration, stagger, incoming, sequenceIndex} = config
 
     useEffect(() => {
         setValues(buildQuadrant(dimensions))
@@ -85,7 +86,20 @@ const App = () => {
         const methods = {
             single: () => updateValue(Math.floor(Math.random() * ((dimensions ^ 2) - 1))),
             all: () => setValues(buildQuadrant(dimensions)),
-            collection: () => setValues(collection[dimensions][Math.floor(Math.random() * collection[dimensions].length)])
+            collection: () => setValues(collection[dimensions][Math.floor(Math.random() * collection[dimensions].length)]),
+            sequence: () => {
+                setValues(sequence[dimensions][sequenceIndex])
+                setConfig(config => {
+                    let newIndex = config.sequenceIndex + 1
+                    if (newIndex === sequence[dimensions].length)
+                        newIndex = 0
+
+                    return {
+                        ...config,
+                        sequenceIndex: newIndex
+                    }
+                })
+            }
         }
 
         let updateFunc
@@ -102,7 +116,7 @@ const App = () => {
 
         return () => clearInterval(updateFunc)
         // eslint-disable-next-line
-    }, [isUpdating, method, dimensions, interval, isColor])
+    }, [isUpdating, method, dimensions, interval, isColor, sequenceIndex])
 
     return (
         <Container>
@@ -136,7 +150,7 @@ const App = () => {
                         <option value="collection">collection</option>
                         <option value="sequence">sequence</option>
                     </select>
-                    <Button onClick={toggleRandomize}>Randomize:<br/>{isUpdating ? 'on' : 'off'}</Button>
+                    <Button onClick={toggleRandomize}>Updating:<br/>{isUpdating ? 'on' : 'off'}</Button>
                     <HiddenField id="copyarea" ref={textRef} value={JSON.stringify(values).trim()} readOnly/>
                     <Button onClick={copyToClipboard}>Copy</Button>
                     <div>
@@ -199,7 +213,7 @@ const App = () => {
                             />
                         </div>
                         <div>
-                            <Button onClick={processInput}>Update</Button>
+                            <Button onClick={processInput}>Submit</Button>
                         </div>
                     </div>
                 </Panel>

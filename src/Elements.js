@@ -85,6 +85,7 @@ export const Panel = styled.div`
     display: flex;
     flex-direction: column;
     position: relative;
+    padding: 3px;
     &:hover {
       opacity: 1;
     }
