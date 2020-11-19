@@ -22,8 +22,9 @@ import {
     flip,
     increment,
     maybeFlip,
+    maybeInvert,
     positionToCoords
-}                   from './utils'
+} from './utils'
 
 const black = ['black', 'black']
 const q = [0, 1, 2, 3]
@@ -39,6 +40,7 @@ const App = () => {
         isColor: false,
         isDark: false,
         isUpdating: false,
+        isStaggered: true,
         colors: black,
         method: 'collection',
         index: null,
@@ -46,7 +48,7 @@ const App = () => {
         incoming: ''
     })
     const [values, setValues] = useState([])
-    const {dimensions, squareSize, interval, isColor, isDark, isUpdating, method, colors, duration, stagger, incoming, sequenceIndex} = config
+    const {dimensions, squareSize, interval, isColor, isDark, isUpdating, method, colors, duration, stagger, incoming, sequenceIndex, isStaggered} = config
 
     useEffect(() => {
         setValues(buildQuadrant(dimensions))
@@ -86,7 +88,7 @@ const App = () => {
         const methods = {
             single: () => updateValue(Math.floor(Math.random() * ((dimensions ^ 2) - 1))),
             all: () => setValues(buildQuadrant(dimensions)),
-            collection: () => setValues(collection[dimensions][Math.floor(Math.random() * collection[dimensions].length)]),
+            collection: () => setValues(maybeInvert(collection[dimensions][Math.floor(Math.random() * collection[dimensions].length)])),
             sequence: () => {
                 setValues(sequence[dimensions][sequenceIndex])
                 setConfig(config => {
@@ -134,6 +136,7 @@ const App = () => {
                                 colors={colors}
                                 duration={duration}
                                 stagger={stagger}
+                                isStaggered={isStaggered}
                             />
                         )}
                     </Quadrant>
@@ -201,6 +204,14 @@ const App = () => {
                             <Field
                                 onChange={() => setConfig(config => ({...config, isDark: !config.isDark}))}
                                 value={isDark}
+                                type="checkbox"
+                            />
+                        </div>
+                        <div>
+                            Staggered:
+                            <Field
+                                onChange={() => setConfig(config => ({...config, isStaggered: !config.isStaggered}))}
+                                value={isStaggered}
                                 type="checkbox"
                             />
                         </div>

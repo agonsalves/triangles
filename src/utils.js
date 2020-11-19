@@ -19,6 +19,20 @@ export const increment = value => value === 3 ? 0 : value + 1
 
 export const flip = type => type === 1 ? 3 : type === 3 ? 1 : type
 
+const invert = type => {
+    // eslint-disable-next-line default-case
+    switch (type) {
+        case 0:
+            return 2
+        case 1:
+            return 3
+        case 2:
+            return 0
+        case 3:
+            return 1
+    }
+}
+
 export const positionToCoords = (position, dimensions) => {
     const x = !!position ? position % dimensions : 0
     const y = Math.floor(position / dimensions)
@@ -26,9 +40,8 @@ export const positionToCoords = (position, dimensions) => {
     return {x,y}
 }
 
-export const getRange = colors => ([...colors.map((x, i) => (1 / (colors.length - 1)) * i), 1])
+const coinFlip = () => Math.floor(Math.random() * 2)
 
-export const maybeFlip = array => {
-    const isReversed = Math.floor(Math.random() * 2)
-    return isReversed ? array.reverse() : array
-}
+export const maybeFlip = array => coinFlip() ? array.reverse() : array
+
+export const maybeInvert = array => coinFlip() ? array.map(x => invert(x)) : array

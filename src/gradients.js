@@ -24,5 +24,6 @@ export const gradients = [
     ['#FA8BFF', '#2BD2FF', '#2BFF88'],
     ['#FF3CAC', '#784BA0', '#2B86C5'],
     ['#30cfd0', '#330867'],
-    ['#eea2a2', '#bbc1bf', '#57c6e1', '#b49fda', '#7ac5d8']
+    ['#eea2a2', '#bbc1bf', '#57c6e1', '#b49fda', '#7ac5d8'],
+    ['#3d3393', '#2b76b9', '#2cacd1', '#35eb93'],
 ]
