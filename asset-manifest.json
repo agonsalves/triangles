@@ -1,8 +1,8 @@
 {
   "files": {
     "main.css": "/triangles/static/css/main.203382a1.chunk.css",
-    "main.js": "/triangles/static/js/main.29b9b9cf.chunk.js",
-    "main.js.map": "/triangles/static/js/main.29b9b9cf.chunk.js.map",
+    "main.js": "/triangles/static/js/main.e8d19202.chunk.js",
+    "main.js.map": "/triangles/static/js/main.e8d19202.chunk.js.map",
     "runtime-main.js": "/triangles/static/js/runtime-main.f99fe0f8.js",
     "runtime-main.js.map": "/triangles/static/js/runtime-main.f99fe0f8.js.map",
     "static/js/2.b6f2593f.chunk.js": "/triangles/static/js/2.b6f2593f.chunk.js",
@@ -15,6 +15,6 @@
     "static/js/runtime-main.f99fe0f8.js",
     "static/js/2.b6f2593f.chunk.js",
     "static/css/main.203382a1.chunk.css",
-    "static/js/main.29b9b9cf.chunk.js"
+    "static/js/main.e8d19202.chunk.js"
   ]
 }
