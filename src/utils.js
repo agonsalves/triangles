@@ -37,7 +37,7 @@ export const positionToCoords = (position, dimensions) => {
     const x = !!position ? position % dimensions : 0
     const y = Math.floor(position / dimensions)
 
-    return {x,y}
+    return {x, y}
 }
 
 const coinFlip = () => Math.floor(Math.random() * 2)
@@ -45,3 +45,9 @@ const coinFlip = () => Math.floor(Math.random() * 2)
 export const maybeFlip = array => coinFlip() ? array.reverse() : array
 
 export const maybeInvert = array => coinFlip() ? array.map(x => invert(x)) : array
+
+export const bpmToMs = (bpm, note) => Math.round((60000 / bpm) * (note / .25))
+
+//export const msToBpm = (ms, note) =>
+
+export const maxStagger = (interval, dimensions) => Math.round(interval / dimensions)

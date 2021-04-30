@@ -14,14 +14,24 @@ const pointSet = [
     'M100,0 L 0,0 L 0,100Z'
 ]
 
-export const Triangle = memo(({dimensions, type, updateValue, position, colors, isUpdating, duration, stagger, isStaggered}) => {
+export const Triangle = memo(({
+                                  dimensions,
+                                  type,
+                                  updateValue,
+                                  position,
+                                  colors,
+                                  isUpdating,
+                                  duration,
+                                  stagger,
+                                  isStaggered
+                              }) => {
     const {x, y} = positionToCoords(position, dimensions)
     const colorMap = interpolate(colors)
     const {shape, fill} = useSpring({
         shape: pointSet[type],
         fill: colorMap((x + y) / ((dimensions * 2) - 2)),
         config: {
-            precision: 0.05,
+            precision: 0.1,
             duration
         },
         delay: isUpdating && isStaggered ? Math.max(x, y) * stagger : 0,
@@ -41,75 +51,99 @@ export const Triangle = memo(({dimensions, type, updateValue, position, colors, 
 })
 
 export const Container = styled.div`
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
 `
 
+export const Skewer = memo(({isUpdating, children}) => {
+    const styles = useSpring({
+        skewX: 0,
+        skewY: 0,
+        loop: {reverse: true},
+        config: {tension: 50},
+        to: [
+            {
+                skewX: 15,
+                skewY: 15
+            },
+            {
+                skewX: -15,
+                skewY: -15
+            },
+        ]
+    })
+
+    return (isUpdating && (
+        <animated.div style={styles} className="skewer">{children}</animated.div>
+    )) || children
+})
+
 export const Frame = styled.div`
-    background-color: ${({isDark}) => isDark ? 'black' : 'white'};
-    display: grid;
-    width: ${({size}) => size}px;
-    height: ${({size}) => size}px;
-    grid-template-rows: 1fr 1fr;
-    grid-template-columns: 1fr 1fr;
-    grid-template-areas:
+  background-color: ${({isDark}) => isDark ? 'black' : 'white'};
+  display: grid;
+  width: ${({size}) => size}px;
+  height: ${({size}) => size}px;
+  grid-template-rows: 1fr 1fr;
+  grid-template-columns: 1fr 1fr;
+  grid-template-areas:
         "q4 q1"
         "q3 q2";
 `
 
 const Model = styled.svg`
-    width: ${({dimensions}) => 100 / (dimensions)}%;
-    height:  ${({dimensions}) => 100 / (dimensions)}%;
+  width: ${({dimensions}) => 100 / (dimensions)}%;
+  height: ${({dimensions}) => 100 / (dimensions)}%;
 `
 
 export const Quadrant = styled.div`
-    display: flex;
-    flex-wrap: wrap-reverse;
-    align-items: flex-end;
-    transform: rotate(${({number}) => number * 90}deg);
-    grid-area: q${({number}) => number + 1};
+  display: flex;
+  flex-wrap: wrap-reverse;
+  align-items: flex-end;
+  transform: rotate(${({number}) => number * 90}deg);
+  grid-area: q${({number}) => number + 1};
 `
 
 export const PanelWrapper = styled.div`
-    position: absolute;
-    top: 0;
-    left: 0;
+  position: absolute;
+  top: 0;
+  left: 0;
 `
 
 export const Panel = styled.div`
-    background-color: white;
-    opacity: 0;
-    transition: opacity .2s ease-out;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    padding: 3px;
-    &:hover {
-      opacity: 1;
-    }
+  background-color: white;
+  opacity: 0;
+  transition: opacity .2s ease-out;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: 3px;
+
+  &:hover {
+    opacity: 1;
+  }
 `
 
 export const Button = styled.div`
-    width: 100px;
-    height: 100px;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 12px;
-    border: 1px solid #333;
-    text-align: center;
+  width: 100px;
+  height: 100px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  border: 1px solid #333;
+  text-align: center;
 `
 
 export const HiddenField = styled.input`
-    height: 0;
-    padding: 0;
-    border: none;
-    position: absolute;
+  height: 0;
+  padding: 0;
+  border: none;
+  position: absolute;
 `
 
 export const Field = styled.input`
-    width: 50px;
+  width: 50px;
 `
