@@ -1,54 +1,6 @@
-import interpolate        from 'color-interpolate'
-import React, {memo}      from 'react'
-import {
-    animated,
-    useSpring
-}                         from 'react-spring'
-import styled             from 'styled-components'
-import {positionToCoords} from './utils'
-
-const pointSet = [
-    'M0,0 L 0,100 L 100,100Z',
-    'M0,100 L 100,100 L 100,0Z',
-    'M100,100 L 100,0 L 0,0Z',
-    'M100,0 L 0,0 L 0,100Z'
-]
-
-export const Triangle = memo(({
-                                  dimensions,
-                                  type,
-                                  updateValue,
-                                  position,
-                                  colors,
-                                  isUpdating,
-                                  duration,
-                                  stagger,
-                                  isStaggered
-                              }) => {
-    const {x, y} = positionToCoords(position, dimensions)
-    const colorMap = interpolate(colors)
-    const {shape, fill} = useSpring({
-        shape: pointSet[type],
-        fill: colorMap((x + y) / ((dimensions * 2) - 2)),
-        config: {
-            precision: 0.1,
-            duration
-        },
-        delay: isUpdating && isStaggered ? Math.max(x, y) * stagger : 0,
-    })
-
-    return (
-        <Model
-            viewBox="0 0 100 100"
-            xmlns="http://www.w3.org/2000/svg"
-            dimensions={dimensions}
-            type={type}
-            onClick={() => updateValue(position)}
-        >
-            <animated.path d={shape} style={{fill}}/>
-        </Model>
-    )
-})
+import React, { memo }         from 'react'
+import { animated, useSpring } from 'react-spring'
+import styled                  from 'styled-components'
 
 export const Container = styled.div`
   display: flex;
@@ -92,7 +44,7 @@ export const Frame = styled.div`
         "q3 q2";
 `
 
-const Model = styled.svg`
+export const Model = styled.svg`
   width: ${({dimensions}) => 100 / (dimensions)}%;
   height: ${({dimensions}) => 100 / (dimensions)}%;
 `

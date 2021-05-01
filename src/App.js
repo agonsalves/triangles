@@ -8,8 +8,7 @@ import {
     Container,
     Frame,
     Quadrant,
-    Skewer,
-    Triangle
+    Skewer
 }                   from './Elements'
 import {gradients}  from './gradients'
 import {sequence}   from './sequence'
@@ -21,6 +20,7 @@ import {
     maybeInvert,
     positionToCoords
 }                   from './utils'
+import Triangle     from './Triangle'
 
 const black = ['black', 'black']
 const q = [0, 1, 2, 3]
@@ -38,6 +38,7 @@ const App = () => {
         isDark: false,
         isUpdating: false,
         isStaggered: true,
+        isReversed: false,
         isSkewed: false,
         colors: black,
         method: 'collection',
@@ -55,6 +56,7 @@ const App = () => {
         isDark,
         isUpdating,
         isSkewed,
+        isReversed,
         method,
         colors,
         duration,
@@ -138,6 +140,7 @@ const App = () => {
                                     duration={duration}
                                     stagger={stagger}
                                     isStaggered={isStaggered}
+                                    isReversed={isReversed}
                                 />
                             )}
                         </Quadrant>

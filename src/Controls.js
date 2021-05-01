@@ -26,7 +26,8 @@ const Controls = ({config, setConfig, setValues, values}) => {
         isSkewed,
         stagger,
         incoming,
-        isStaggered
+        isStaggered,
+        isReversed
     } = config
 
     const toggleRandomize = () => setConfig(config => ({...config, isUpdating: !config.isUpdating}))
@@ -145,6 +146,17 @@ const Controls = ({config, setConfig, setValues, values}) => {
                                 isStaggered: !config.isStaggered
                             }))}
                             value={isStaggered}
+                            type="checkbox"
+                        />
+                    </div>
+                    <div>
+                        Reversed:
+                        <Field
+                            onChange={() => setConfig(config => ({
+                                ...config,
+                                isReversed: !config.isReversed
+                            }))}
+                            value={isReversed}
                             type="checkbox"
                         />
                     </div>
