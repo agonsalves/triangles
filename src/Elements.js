@@ -79,7 +79,7 @@ export const Panel = styled.div`
 
 export const Button = styled.div`
   width: 100px;
-  height: 100px;
+  height: 60px;
   cursor: pointer;
   display: flex;
   justify-content: center;

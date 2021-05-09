@@ -1,15 +1,16 @@
-import React, {useRef} from 'react'
+import React, { useRef } from 'react'
 import {
     Button,
     Field,
     HiddenField,
     Panel,
     PanelWrapper
-} from './Elements'
+}                        from './Elements'
 import {
     bpmToMs,
     maxStagger
-} from './utils'
+}                        from './utils'
+import { client }        from './App'
 
 const Controls = ({config, setConfig, setValues, values}) => {
     const textRef = useRef(null)
@@ -27,7 +28,8 @@ const Controls = ({config, setConfig, setValues, values}) => {
         stagger,
         incoming,
         isStaggered,
-        isReversed
+        isReversed,
+        isController
     } = config
 
     const toggleRandomize = () => setConfig(config => ({...config, isUpdating: !config.isUpdating}))
@@ -42,6 +44,13 @@ const Controls = ({config, setConfig, setValues, values}) => {
 
         if (Array.isArray(newLayout) && newLayout.length === dimensions ^ 2)
             setValues(newLayout)
+    }
+
+    const handlePush = () => {
+        client.send(JSON.stringify({
+            ...config,
+            isController: false
+        }))
     }
 
     return (
@@ -110,6 +119,7 @@ const Controls = ({config, setConfig, setValues, values}) => {
                             defaultValue={1}
                         >
                             <option value={1}>whole</option>
+                            <option value={.5}>half</option>
                             <option value={.25}>quarter</option>
                         </select>
                     </div>
@@ -182,6 +192,55 @@ const Controls = ({config, setConfig, setValues, values}) => {
                     <div>
                         <Button onClick={processInput}>Submit</Button>
                     </div>
+                    <div>
+                        Controller:
+                        <Field
+                            onChange={() => setConfig(config => ({
+                                ...config,
+                                isController: !config.isController
+                            }))}
+                            value={isController}
+                            type="checkbox"
+                        />
+                    </div>
+                    <div>
+                        Mode:
+                        <select
+                            defaultValue={0}
+                            onChange={e => {
+                                switch (e) {
+                                    case 0:
+                                    default:
+                                        return setConfig(config => ({
+                                            ...config,
+                                            isController: false,
+                                            isListener: false
+                                        }))
+                                    case 1:
+                                        return setConfig(config => ({
+                                            ...config,
+                                            isController: false,
+                                            isListener: true
+                                        }))
+                                    case 2:
+                                        return setConfig(config => ({
+                                            ...config,
+                                            isController: true,
+                                            isListener: false
+                                        }))
+                                }
+                            }}
+                        >
+                            <option value={0}>Normal</option>
+                            <option value={1}>Listener</option>
+                            <option value={2}>Controller</option>
+                        </select>
+                    </div>
+                    {isController && (
+                        <div>
+                            <Button onClick={() => handlePush()}>Push Settings</Button>
+                        </div>
+                    )}
                 </div>
             </Panel>
         </PanelWrapper>

@@ -21,9 +21,12 @@ import {
     positionToCoords
 }                   from './utils'
 import Triangle     from './Triangle'
+import { w3cwebsocket as W3CWebSocket } from "websocket"
 
 const black = ['black', 'black']
 const q = [0, 1, 2, 3]
+
+export const client = new W3CWebSocket('ws://127.0.0.1:8080')
 
 const App = () => {
     const [config, setConfig] = useState({
@@ -40,6 +43,8 @@ const App = () => {
         isStaggered: true,
         isReversed: false,
         isSkewed: false,
+        isController: false,
+        isListener: false,
         colors: black,
         method: 'collection',
         index: null,
@@ -62,8 +67,26 @@ const App = () => {
         duration,
         stagger,
         sequenceIndex,
-        isStaggered
+        isStaggered,
+        isController,
+        isListener
     } = config
+
+    useEffect(() => {
+        if (isController || isListener) {
+            client.onopen = () => {
+                console.log('WebSocket Client Connected');
+            };
+            client.onmessage = (message) => {
+                const incoming = JSON.parse(message.data)
+                console.log(incoming);
+                if (typeof incoming === 'object' && !isController) {
+                    setConfig(incoming)
+                }
+
+            };
+        }
+    }, [isController, isListener])
 
     useEffect(() => {
         setValues(buildQuadrant(dimensions))
@@ -107,7 +130,7 @@ const App = () => {
         }
 
         let updateFunc
-        if (isUpdating)
+        if (isUpdating && !isController)
             updateFunc = setInterval(() => {
                 isColor
                     ? setConfig(config => ({
@@ -120,7 +143,7 @@ const App = () => {
 
         return () => clearInterval(updateFunc)
         // eslint-disable-next-line
-    }, [isUpdating, method, dimensions, interval, isColor, sequenceIndex])
+    }, [isUpdating, method, dimensions, interval, isColor, sequenceIndex, isController])
 
     return (
         <Container>
@@ -135,7 +158,7 @@ const App = () => {
                                     key={i}
                                     position={i}
                                     updateValue={updateValue}
-                                    isUpdating={isUpdating}
+                                    isUpdating={isUpdating && !isController}
                                     colors={colors}
                                     duration={duration}
                                     stagger={stagger}
