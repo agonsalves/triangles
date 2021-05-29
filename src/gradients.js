@@ -1,4 +1,5 @@
 export const gradients = [
+    ['black'],
     ['red', 'yellow', 'blue', 'violet'],
     ['#e96443', '#904e95'],
     ['#E55D87', '#5FC3E4'],

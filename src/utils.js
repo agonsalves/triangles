@@ -40,9 +40,7 @@ export const positionToCoords = (position, dimensions) => {
     return {x, y}
 }
 
-const coinFlip = () => Math.floor(Math.random() * 2)
-
-export const maybeFlip = array => coinFlip() ? array.reverse() : array
+export const coinFlip = () => Math.floor(Math.random() * 2)
 
 export const maybeInvert = array => coinFlip() ? array.map(x => invert(x)) : array
 

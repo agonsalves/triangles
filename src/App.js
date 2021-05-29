@@ -1,5 +1,6 @@
 import React, {
     useEffect,
+    useMemo,
     useState
 }                   from 'react'
 import Controls     from './Controls'
@@ -13,13 +14,12 @@ import {
 import {gradients}  from './gradients'
 import {sequence}   from './sequence'
 import {
-    buildQuadrant,
+    buildQuadrant, coinFlip,
     flip,
     increment,
-    maybeFlip,
     maybeInvert,
     positionToCoords
-}                   from './utils'
+} from './utils'
 import Triangle     from './Triangle'
 import { w3cwebsocket as W3CWebSocket } from "websocket"
 
@@ -42,16 +42,19 @@ const App = () => {
         isUpdating: false,
         isStaggered: true,
         isReversed: false,
+        isColorReversed: false,
         isSkewed: false,
         isController: false,
         isListener: false,
         colors: black,
-        method: 'collection',
+        updateMode: 'collection',
         index: null,
+        collectionIndex: 0,
         sequenceIndex: 0,
-        incoming: ''
+        colorIndex: 0,
+        incoming: '',
+        values: []
     })
-    const [values, setValues] = useState([])
 
     const {
         dimensions,
@@ -62,88 +65,120 @@ const App = () => {
         isUpdating,
         isSkewed,
         isReversed,
-        method,
-        colors,
+        isColorReversed,
+        updateMode,
         duration,
         stagger,
         sequenceIndex,
+        colorIndex,
         isStaggered,
         isController,
-        isListener
+        isListener,
+        values
     } = config
 
     useEffect(() => {
         if (isController || isListener) {
             client.onopen = () => {
                 console.log('WebSocket Client Connected');
-            };
+            }
             client.onmessage = (message) => {
                 const incoming = JSON.parse(message.data)
-                console.log(incoming);
+                console.log(incoming)
                 if (typeof incoming === 'object' && !isController) {
                     setConfig(incoming)
                 }
 
-            };
+            }
         }
     }, [isController, isListener])
 
+    const updateConfig = newConfig => setConfig(config => ({...config, ...newConfig}))
+
     useEffect(() => {
-        setValues(buildQuadrant(dimensions))
+        updateConfig({values: buildQuadrant(dimensions)})
     }, [dimensions])
 
-    const updateValue = position => {
+    const randomizeColors = useMemo(() => () => {
+        updateConfig({
+            colorIndex: Math.floor((Math.random () * (gradients.length - 1)) + 1),
+            isColorReversed: coinFlip()
+        })
+    }, [])
+
+    const updateValue = useMemo(() => position => {
         const {x, y} = positionToCoords(position, dimensions)
 
-        setValues(old => {
-            let updated = [...old]
-            updated[position] = increment(old[position])
+        let updated = [...values]
+        updated[position] = increment(values[position])
 
-            if (x !== y) {
-                let mirror = (x * dimensions) + y
-                updated[mirror] = flip(updated[position])
-            }
-
-            return updated
-        })
-    }
-
-
-    useEffect(() => {
-        const methods = {
-            single: () => updateValue(Math.floor(Math.random() * ((dimensions ^ 2) - 1))),
-            all: () => setValues(buildQuadrant(dimensions)),
-            collection: () => setValues(maybeInvert(collection[dimensions][Math.floor(Math.random() * collection[dimensions].length)])),
-            sequence: () => {
-                setValues(sequence[dimensions][sequenceIndex])
-                setConfig(config => {
-                    let newIndex = config.sequenceIndex + 1
-                    if (newIndex === sequence[dimensions].length)
-                        newIndex = 0
-
-                    return {
-                        ...config,
-                        sequenceIndex: newIndex
-                    }
-                })
-            }
+        if (x !== y) {
+            let mirror = (x * dimensions) + y
+            updated[mirror] = flip(updated[position])
         }
 
+        return updateConfig({values: updated})
+    }, [dimensions, values])
+
+    const updateSingle = useMemo(() => () => {
+        updateValue(Math.floor(Math.random() * ((dimensions ^ 2) - 1)))
+    }, [dimensions, updateValue])
+
+    const updateAll = useMemo(() => () => {
+        if (isColor) {
+            randomizeColors()
+        }
+
+        updateConfig({values: buildQuadrant(dimensions)})
+    }, [dimensions, isColor, randomizeColors])
+
+    const updateCollection = useMemo(() => () => {
+        if (isColor) {
+            randomizeColors()
+        }
+
+        updateConfig({values: maybeInvert(collection[dimensions][Math.floor(Math.random() * collection[dimensions].length)])})
+    }, [dimensions, isColor, randomizeColors])
+
+    const updateSequence = useMemo(() => () => {
+        setConfig(config => {
+            let newIndex = config.sequenceIndex + 1
+            if (newIndex === sequence[dimensions].length)
+                newIndex = 0
+
+            return {
+                ...config,
+                sequenceIndex: newIndex,
+                values: sequence[dimensions][sequenceIndex]
+            }
+        })
+    }, [dimensions, sequenceIndex])
+
+    useEffect(() => {
         let updateFunc
+
         if (isUpdating && !isController)
             updateFunc = setInterval(() => {
-                isColor
-                    ? setConfig(config => ({
-                        ...config,
-                        colors: maybeFlip(gradients[Math.floor(Math.random() * (gradients.length - 1))])
-                    }))
-                    : setConfig(config => ({...config, colors: black}))
-                methods[method]()
+                switch (updateMode) {
+                    case 'single':
+                        updateSingle()
+                        break
+                    case 'all':
+                        updateAll()
+                        break
+                    case 'collection':
+                        updateCollection()
+                        break
+                    case 'sequence':
+                        updateSequence()
+                        break
+                    default:
+                }
             }, interval)
 
         return () => clearInterval(updateFunc)
         // eslint-disable-next-line
-    }, [isUpdating, method, dimensions, interval, isColor, sequenceIndex, isController])
+    }, [isUpdating, updateMode, dimensions, interval, isColor, sequenceIndex, isController])
 
     return (
         <Container>
@@ -159,7 +194,8 @@ const App = () => {
                                     position={i}
                                     updateValue={updateValue}
                                     isUpdating={isUpdating && !isController}
-                                    colors={colors}
+                                    colorIndex={colorIndex}
+                                    isColorReversed={isColorReversed}
                                     duration={duration}
                                     stagger={stagger}
                                     isStaggered={isStaggered}
@@ -170,7 +206,12 @@ const App = () => {
                     )}
                 </Frame>
             </Skewer>
-            <Controls config={config} setConfig={setConfig} setValues={setValues} values={values}/>
+            <Controls
+                config={config}
+                setConfig={setConfig}
+                setValues={values => updateConfig({values})}
+                values={values}
+            />
         </Container>
     )
 }

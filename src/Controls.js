@@ -57,7 +57,7 @@ const Controls = ({config, setConfig, setValues, values}) => {
         <PanelWrapper>
             <Panel>
                 <select
-                    onChange={e => setConfig(config => ({...config, method: e.target.value}))}
+                    onChange={e => setConfig(config => ({...config, updateMode: e.target.value}))}
                     defaultValue="collection"
                 >
                     <option value="single">single</option>
