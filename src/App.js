@@ -1,29 +1,30 @@
+import interpolate                    from 'color-interpolate'
 import React, {
     useEffect,
     useMemo,
     useState
-}                   from 'react'
-import Controls     from './Controls'
-import {collection} from './collection'
+}                                     from 'react'
+import {w3cwebsocket as W3CWebSocket} from 'websocket'
+import {collection}                   from './collection'
+import Controls                       from './Controls'
 import {
     Container,
     Frame,
     Quadrant,
     Skewer
-}                   from './Elements'
-import {gradients}  from './gradients'
-import {sequence}   from './sequence'
+}                                     from './Elements'
+import {gradients}                    from './gradients'
+import {sequence}                     from './sequence'
+import Triangle                       from './Triangle'
 import {
-    buildQuadrant, coinFlip,
+    buildQuadrant,
+    coinFlip,
     flip,
     increment,
     maybeInvert,
     positionToCoords
-} from './utils'
-import Triangle     from './Triangle'
-import { w3cwebsocket as W3CWebSocket } from "websocket"
+}                                     from './utils'
 
-const black = ['black', 'black']
 const q = [0, 1, 2, 3]
 
 export const client = new W3CWebSocket('ws://127.0.0.1:8080')
@@ -42,16 +43,14 @@ const App = () => {
         isUpdating: false,
         isStaggered: true,
         isReversed: false,
-        isColorReversed: false,
         isSkewed: false,
         isController: false,
         isListener: false,
-        colors: black,
+        colors: interpolate(gradients[0]),
         updateMode: 'collection',
         index: null,
         collectionIndex: 0,
         sequenceIndex: 0,
-        colorIndex: 0,
         incoming: '',
         values: []
     })
@@ -65,12 +64,11 @@ const App = () => {
         isUpdating,
         isSkewed,
         isReversed,
-        isColorReversed,
         updateMode,
         duration,
         stagger,
         sequenceIndex,
-        colorIndex,
+        colors,
         isStaggered,
         isController,
         isListener,
@@ -100,9 +98,10 @@ const App = () => {
     }, [dimensions])
 
     const randomizeColors = useMemo(() => () => {
+        const colorArray = gradients[Math.floor((Math.random() * (gradients.length - 1)) + 1)]
+
         updateConfig({
-            colorIndex: Math.floor((Math.random () * (gradients.length - 1)) + 1),
-            isColorReversed: coinFlip()
+            colors: interpolate(coinFlip() ? colorArray.reverse() : colorArray)
         })
     }, [])
 
@@ -194,8 +193,7 @@ const App = () => {
                                     position={i}
                                     updateValue={updateValue}
                                     isUpdating={isUpdating && !isController}
-                                    colorIndex={colorIndex}
-                                    isColorReversed={isColorReversed}
+                                    colors={colors}
                                     duration={duration}
                                     stagger={stagger}
                                     isStaggered={isStaggered}

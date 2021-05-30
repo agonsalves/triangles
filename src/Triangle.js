@@ -1,9 +1,11 @@
-import React, { memo }         from 'react'
-import { positionToCoords }    from './utils'
-import interpolate             from 'color-interpolate'
-import { animated, useSpring } from 'react-spring'
-import { Model }               from './Elements'
-import { gradients }           from './gradients'
+import React, {memo} from 'react'
+
+import {
+    animated,
+    useSpring
+}                         from 'react-spring'
+import {Model}            from './Elements'
+import {positionToCoords} from './utils'
 
 const pointSet = [
     'M0,0 L 0,100 L 100,100Z',
@@ -17,20 +19,19 @@ const Triangle = memo(({
                            type,
                            updateValue,
                            position,
-                           colorIndex,
-                           isColorReversed,
+                           colors,
                            isUpdating,
                            duration,
                            stagger,
                            isStaggered,
                            isReversed
                        }) => {
-    const palette = isColorReversed ? gradients[colorIndex].reverse() : gradients[colorIndex]
+
     const {x, y} = positionToCoords(position, dimensions)
-    const colorMap = interpolate(palette)
+
     const {shape, fill} = useSpring({
         shape: pointSet[type],
-        fill: colorMap((x + y) / ((dimensions * 2) - 2)),
+        fill: colors((x + y) / ((dimensions * 2) - 2)),
         config: {
             precision: 0.1,
             duration
